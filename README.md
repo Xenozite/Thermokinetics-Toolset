@@ -2,7 +2,7 @@
 <div style="text-align: center;">
 
 ![Static Badge](https://img.shields.io/badge/Version-1.1-mediumseagreen)
-![Static Badge](https://img.shields.io/badge/MATLAB-R2022b-blue)
+![Static Badge](https://img.shields.io/badge/MATLAB-R2023a-blue)
 ![Static Badge](https://img.shields.io/badge/License-MIT-crimson)
 ![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/xenozite/Thermokinetics-Toolset?color=orchid)
 </div>
@@ -54,7 +54,7 @@ Despite the abundance of methods, it is recommended to use FR, AIC, ALIM for ana
 |     32.7    |                   97.1                  |                     -0.25                   | 0.08 | ... | 0.07 |
 |     ...     |                   ...                   |                      ...                    | ... | ... | ... |
 
-2. Open GlobalSettings.m and define initial masses of samples, heat velocities, steps and its temperature ranges, deconvoluted peaks count, target convertion range. This file will make precomputions for further usage in other scripts.
+2. Open GlobalSettings.m and define initial masses of samples, heat velocities, steps and its temperature ranges, deconvoluted peaks count, target convertion range. This script will make precomputions for further usage in other ones. Deconvolution of peaks must be done using dm/dT vs T relation (% of lost mass/K).
 
 ```js
 // We have 3 samples which were analysed on 3 velocities.
@@ -109,7 +109,7 @@ Despite this, they may be unique in your own case.
    UseEaMeanValue = [false false false];
 ```
 
-6. Open KineticCompensationEffect.m and calculate values of pre-exponential factor A for every reaction stage basing on previous Ea values. In case of variable Ea, the pre-exponential factor A will also be variable and vice versa if Ea is constant with conversion then A pre-exponential factor A will also be constant.
+6. Open KineticCompensationEffect.m and calculate values of pre-exponential factor A for every reaction stage basing on previous Ea values. In case of variable Ea, the pre-exponential factor A will also be variable and vice versa if Ea is constant with conversion then pre-exponential factor A will also be constant.
 
 <div style="text-align: center;">
 
