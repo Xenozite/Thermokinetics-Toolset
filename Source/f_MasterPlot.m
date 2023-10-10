@@ -17,31 +17,31 @@ for TargetConversionId = 1:length(ConversionsBuffer)
 f(TargetConversionId) = (f(TargetConversionId) - MinF) ./ (MaxF - MinF);
 end
 % f(a)/f(0.5) Scaling
-% HalfFIndex = find(TargetConversions == 0.5);
+% HalfFIndex = find(TargetConversions == median(ConversionsBuffer));
 % HalfF = f(HalfFIndex);
 % for TargetConversionId = 1:length(TargetConversions)
 % f(TargetConversionId) = f(TargetConversionId) ./ HalfF;
 % end
 plot(ConversionsBuffer, f);
 end
-legend(DifferentialModelsNames(1:length(DifferentialModelsNames) - 12));
+legend(DifferentialModelsNames(1:length(DifferentialModelsNames)), 'Location', 'eastoutside', 'NumColumns', 1);
 %==========================================================================
 LineStyles = {'--', '-.', ':'};
 Colors = {'#0C5DA5', '#00B945', '#F94144'};
 for VelocityId = 1:length(InitialVelocities)
-ConversionTemperatureDerivatives{VelocityId, StageId} = [transpose(diff(TargetConversions(:)) ./ diff(TargetConversionsTemperatures{VelocityId, StageId}(:))), 0];
+ConversionTemperatureDerivatives{VelocityId, StageId} = [diff(TargetConversions(1, :)) ./ diff(TargetConversionsTemperatures{VelocityId, StageId}(1, :)), 0];
 f = zeros(size(TargetConversions));
 for TargetConversionId = 1:length(TargetConversions)
 if UseEaMeanValue(StageId)
-TempEa = MeanEa{StageId} .* 1000;
+TempEa = MeanEa{StageId};
 TempA = A{StageId}(1, 1);
 else
-TempEaEvaluation = transpose(polyval(PolyEaCoefficients{StageId}, TargetConversions(:)));
-TempEa = TempEaEvaluation(1, TargetConversionId) .* 1000;
+TempEaEvaluation = transpose(polyval(PolyEaCoefficients{StageId}, TargetConversions(:))); 
+TempEa = TempEaEvaluation(1, TargetConversionId);
 TempAEvaluation = exp(transpose(polyval(PolyACoefficients{StageId}, TempEaEvaluation(:))));
 TempA = TempAEvaluation(1, TargetConversionId);
 end
-f(TargetConversionId) = InitialVelocities(VelocityId) .* ConversionTemperatureDerivatives{VelocityId, StageId}(1, TargetConversionId) ./(TempA .* exp(-TempEa ./ (R .* TargetConversionsTemperatures{VelocityId, StageId}(1, TargetConversionId))));
+f(TargetConversionId) = InitialVelocities(VelocityId) .* ConversionTemperatureDerivatives{VelocityId, StageId}(1, TargetConversionId) ./ (TempA .* exp(-TempEa ./ (R .* TargetConversionsTemperatures{VelocityId, StageId}(1, TargetConversionId))));
 end
 % 0 - 1 Scaling
 MaxF = max(f);
@@ -50,7 +50,7 @@ for TargetConversionId = 1:length(TargetConversions)
 f(TargetConversionId) = (f(TargetConversionId) - MinF)/(MaxF - MinF);
 end
 % f(a)/f(0.5) Scaling
-% HalfFIndex = find(TargetConversions == 0.5);
+% HalfFIndex = find(TargetConversions == median(TargetConversions));
 % HalfF = f(HalfFIndex);
 % for TargetConversionId = 1:length(TargetConversions)
 % f(TargetConversionId) = f(TargetConversionId) ./ HalfF;

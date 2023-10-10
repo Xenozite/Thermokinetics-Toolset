@@ -21,7 +21,6 @@ plot(TemperatureCelsius, DSC(VelocityId, :), 'Color', '#B83DBA', 'LineStyle', '-
 ylabel('Heat flow, $\frac{mW}{mg}$', 'Interpreter', 'LaTex', 'FontSize', 14);
 ylim([min(DSC(VelocityId, :)) - 0.5 0.5]);
 xlabel('T, °C', 'FontSize', 14);
-xlim([30 500]);
 title(PlotTile, sprintf('TG+DSC, β = %.2f', InitialVelocities(VelocityId)), "FontSize", 12, "FontWeight", "normal");
 end
 %================================== DTG ===================================
@@ -31,11 +30,9 @@ tiledlayout(1, length(InitialVelocities));
 for VelocityId = 1:length(InitialVelocities)
 PlotTile = nexttile;
 grid on;
-plot(TemperatureCelsius, DTGPercent(VelocityId, :), 'Color', '#00B945', 'LineStyle', 'none', 'Marker', '.');
-ylabel('$\frac{dm}{dT}, \frac{mg}{K}$', 'Interpreter', 'LaTex', 'FontSize', 14);
-ylim([-0.45 0.05]);
+plot(TemperatureCelsius, DTGPercent(VelocityId, :), 'Color', '#00B945', 'LineStyle', '-');
+ylabel('$\frac{dm}{dT}, \frac{\%}{K}$', 'Interpreter', 'LaTex', 'FontSize', 14);
 xlabel('T, °C', 'FontSize', 14);
-xlim([30 500]);
 title(PlotTile, sprintf('DTG, β = %.2f', InitialVelocities(VelocityId)), "FontSize", 12, "FontWeight", "normal");
 end
 %============================== Convertions ===============================

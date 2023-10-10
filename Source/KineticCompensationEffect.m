@@ -8,10 +8,10 @@ PlotTile = nexttile;
 colororder({'#0C5DA5', '#F94144'});
 grid on;
 hold on;
-xlabel('$E_{a}, \frac{kJ}{mol}$', 'Interpreter', 'LaTex', 'FontSize', 14);
+xlabel('$E_{a}, \frac{J}{mol}$', 'Interpreter', 'LaTex', 'FontSize', 14);
 ylabel('$\ln A, min^{-1}$', 'Interpreter', 'LaTex', 'FontSize', 14);
 ConversionTemperatureDerivatives{VelocityId, StageId} = [transpose(diff(TargetConversions(:)) ./ diff(TargetConversionsTemperatures{VelocityId, StageId}(:))), 0];
-for ModelId = 1:length(DifferentialModelsNames) - 17
+for ModelId = 1:length(DifferentialModelsNames)
 for ConversionId = 1:length(TargetConversions)
 Temp = log(InitialVelocities(VelocityId) .* ConversionTemperatureDerivatives{VelocityId, StageId}(ConversionId) ./ DifferentialModels{ModelId}(TargetConversions(ConversionId)));
 if ~isnan(Temp) && ~isinf(Temp)
@@ -20,9 +20,9 @@ else
 KCELeftSide{VelocityId, StageId}(ModelId, ConversionId) = 0;
 end
 end
-SHRSlope = polyfit(ReversedTargetConversionsTemperatures{VelocityId, StageId}, KCELeftSide{VelocityId, StageId}(ModelId, :), 1);
-KineticPairs{VelocityId, StageId}(1, ModelId) = -SHRSlope(1) * R ./ 1000;
-KineticPairs{VelocityId, StageId}(2, ModelId) = SHRSlope(2);
+Slope = polyfit(ReversedTargetConversionsTemperatures{VelocityId, StageId}, KCELeftSide{VelocityId, StageId}(ModelId, :), 1);
+KineticPairs{VelocityId, StageId}(1, ModelId) = -Slope(1) .* R;
+KineticPairs{VelocityId, StageId}(2, ModelId) = Slope(2);
 end
 plot(KineticPairs{VelocityId, StageId}(1, :), KineticPairs{VelocityId, StageId}(2, :), 'LineStyle', 'none', 'Marker', '.', 'MarkerSize', 10);
 [KCESlope{VelocityId, StageId}, S] = polyfit(KineticPairs{VelocityId, StageId}(1, :), KineticPairs{VelocityId, StageId}(2, :), 1);
@@ -43,7 +43,7 @@ plot(KineticPairs{VelocityId, StageId}(1, :), KCEData{VelocityId, StageId}(1, :)
 end
 hold off;
 legend(string(InitialVelocities), 'Location', 'best');
-xlabel('$E_{a}, \frac{kJ}{mol}$', 'Interpreter', 'LaTex', 'FontSize', 14);
+xlabel('$E_{a}, \frac{J}{mol}$', 'Interpreter', 'LaTex', 'FontSize', 14);
 ylabel('$\ln A, min^{-1}$', 'Interpreter', 'LaTex', 'FontSize', 14);
 title(sprintf('Kinetic Compensation Effect, Stage = %.d', StageId), "FontSize", 12, "FontWeight", "normal");
 %==========================================================================
@@ -61,8 +61,9 @@ FigureNumber = FigureNumber + 1;
 figure(FigureNumber);
 grid on;
 plot(TargetEa{StageId}(:), lnA{StageId}(1, :), 'LineStyle', '-');
-xlabel('$E_{a}, \frac{kJ}{mol}$', 'Interpreter', 'LaTex', 'FontSize', 14);
+xlabel('$E_{a}, \frac{J}{mol}$', 'Interpreter', 'LaTex', 'FontSize', 14);
 ylabel('$\ln A_{\alpha}, min^{-1}$', 'Interpreter', 'LaTex', 'FontSize', 14);
+legend({sprintf('y = %.4f*x%.4f', PolyACoefficients{StageId}(1, 1), PolyACoefficients{StageId}(1, 2))}, 'Location', 'best');
 title(sprintf('Stage = %.d', StageId), "FontSize", 12, "FontWeight", "normal");
 FigureNumber = FigureNumber + 1;
 figure(FigureNumber);

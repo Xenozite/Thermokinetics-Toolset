@@ -1,7 +1,7 @@
 <h1 style="text-align: center;">Thermokinetics Toolset</h1>
 <div style="text-align: center;">
 
-![Static Badge](https://img.shields.io/badge/Version-1.1-mediumseagreen)
+![Static Badge](https://img.shields.io/badge/Version-1.2-mediumseagreen)
 ![Static Badge](https://img.shields.io/badge/MATLAB-R2023a-blue)
 ![Static Badge](https://img.shields.io/badge/License-MIT-crimson)
 ![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/xenozite/Thermokinetics-Toolset?color=orchid)
@@ -39,7 +39,7 @@
 + Kinetic Compensation Effect (KCE)
 + f(α), g(α), Z(α) Master Plots
 
-Despite the abundance of methods, it is recommended to use FR, AIC, ALIM for analysis, since they can be used to obtain activation energy values with a low error in case of its variability with conversion
+Despite the abundance of methods, it is recommended to use FR, AIC, ALIM for analysis, since they can be used to obtain activation energy values with a low error in case of its variability with conversion.
 </div>
 
 # Usage
