@@ -29,7 +29,7 @@ legend(DifferentialModelsNames(1:length(DifferentialModelsNames)), 'Location', '
 LineStyles = {'--', '-.', ':'};
 Colors = {'#0C5DA5', '#00B945', '#F94144'};
 for VelocityId = 1:length(InitialVelocities)
-ConversionTemperatureDerivatives{VelocityId, StageId} = [diff(TargetConversions(1, :)) ./ diff(TargetConversionsTemperatures{VelocityId, StageId}(1, :)), 0];
+ConversionTemperatureDerivatives{VelocityId, StageId} = ComputeDerivative(TargetConversions(1, :), TargetConversionsTemperatures{VelocityId, StageId}(1, :));
 f = zeros(size(TargetConversions));
 for TargetConversionId = 1:length(TargetConversions)
 if UseEaMeanValue(StageId)

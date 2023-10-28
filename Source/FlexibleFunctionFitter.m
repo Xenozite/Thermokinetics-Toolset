@@ -1,8 +1,11 @@
-StageId = 1;
-VelocityId = 1;
+for StageId = 1:StagesCount
+SBAverageParameters(StageId, :) = [0 0 0 0];
+TSBAverageParameters(StageId, :) = [0 0 0];
+CLAverageParameters(StageId, :) = [0 0 0 0];
+for VelocityId = 1:length(InitialVelocities)
 TempEaEvaluation = transpose(polyval(PolyEaCoefficients{StageId}, TargetConversions(:)));
 TempAEvaluation = exp(transpose(polyval(PolyACoefficients{StageId}, TempEaEvaluation(:))));
-ExperimentalDTG = [diff(TargetConversions(1, :)) ./ diff(TargetConversionsTemperatures{VelocityId, StageId}(1, :)), 0];
+ExperimentalDTG = ComputeDerivative(TargetConversions(1, :), TargetConversionsTemperatures{VelocityId, StageId}(1, :));
 SBStartPoints = [1 1 1 1];
 TSBStartPoints = [1 1 1];
 CLStartPoints = [1 1 1 1];
@@ -10,9 +13,13 @@ X = [transpose(TempAEvaluation), transpose(TargetConversions), transpose(TempEaE
 SBFitterModel = @(X, Parameters) X(:, 1) .* SestakBerggren(X(:, 2), Parameters) .* exp(-X(:, 3) ./ (R .* X(:, 4))) ./ InitialVelocities(VelocityId);
 TSBFitterModel = @(X, Parameters) X(:, 1) .* TruncatedSestakBerggren(X(:, 2), Parameters) .* exp(-X(:, 3) ./ (R .* X(:, 4))) ./ InitialVelocities(VelocityId);
 CLFitterModel = @(X, Parameters) X(:, 1) .* CaiLiu(X(:, 2), Parameters) .* exp(-X(:, 3) ./ (R .* X(:, 4))) ./ InitialVelocities(VelocityId);
-[SBResultParameters, SBGlobalMinimum] = fminsearch(@(Parameters) norm(ExperimentalDTG - transpose(SBFitterModel(X, Parameters))), SBStartPoints);
-[TSBResultParameters, TSBGlobalMinimum] = fminsearch(@(Parameters) norm(ExperimentalDTG - transpose(TSBFitterModel(X, Parameters))), TSBStartPoints);
-[CLResultParameters, CLGlobalMinimum] = fminsearch(@(Parameters) norm(ExperimentalDTG - transpose(CLFitterModel(X, Parameters))), CLStartPoints);
+Options = optimset('MaxFunEvals', 2000, 'MaxIter', 2000);
+[SBResultParameters, SBGlobalMinimum] = fminsearch(@(Parameters) norm(ExperimentalDTG - transpose(SBFitterModel(X, Parameters))), SBStartPoints, Options);
+[TSBResultParameters, TSBGlobalMinimum] = fminsearch(@(Parameters) norm(ExperimentalDTG - transpose(TSBFitterModel(X, Parameters))), TSBStartPoints, Options);
+[CLResultParameters, CLGlobalMinimum] = fminsearch(@(Parameters) norm(ExperimentalDTG - transpose(CLFitterModel(X, Parameters))), CLStartPoints, Options);
+SBAverageParameters(StageId, :) = SBAverageParameters(StageId, :) + SBResultParameters;
+TSBAverageParameters(StageId, :) = TSBAverageParameters(StageId, :) + TSBResultParameters;
+CLAverageParameters(StageId, :) = CLAverageParameters(StageId, :) + CLResultParameters;
 SBTheoreticalDTG = transpose(SBFitterModel(X, SBResultParameters));
 TSBTheoreticalDTG = transpose(TSBFitterModel(X, TSBResultParameters));
 CLTheoreticalDTG = transpose(CLFitterModel(X, CLResultParameters));
@@ -26,10 +33,16 @@ plot(TargetConversionsTemperatures{VelocityId, StageId}(1, :), SBTheoreticalDTG,
 plot(TargetConversionsTemperatures{VelocityId, StageId}(1, :), TSBTheoreticalDTG, 'LineStyle', '-.');
 plot(TargetConversionsTemperatures{VelocityId, StageId}(1, :), CLTheoreticalDTG, 'LineStyle', ':');
 hold off;
-legend({'DTG', 'Sestak-Berggren', 'Truncated Sestak-Berggren', 'Cai-Liu'}, 'Location', 'best', 'NumColumns', 1);
+Axes = gca;
+Axes.XMinorGrid = 'on';
+Axes.YMinorGrid = 'on';
+Axes.XMinorTick = 'on';
+Axes.YMinorTick = 'on';
 ylabel('$\frac{dm}{dT}, \frac{\%}{K}$', 'Interpreter', 'LaTex', 'FontSize', 14);
 xlabel('T, K', 'FontSize', 14);
-title(sprintf('Flexible Function Fitting, Stage = %.d, Velocity = %.d', StageId, InitialVelocities(VelocityId)), "FontSize", 12, "FontWeight", "normal");
+legend({'DTG', 'Sestak-Berggren', 'Truncated Sestak-Berggren', 'Cai-Liu'}, 'Location', 'best', 'NumColumns', 1);
+title(sprintf('Flexible Function Fitting, Stage = %.d, Velocity = %.d', StageId, InitialVelocities(VelocityId) .* 60), "FontSize", 12, "FontWeight", "normal");
+fprintf('===================================================== Stage: %d, Velocity: %d =====================================================\n', StageId, InitialVelocities(VelocityId) .* 60);
 disp('Sestak-Berggren Fit:');
 disp('f(a) = c * a ^ m * (1 - a) ^ n * (-ln(1 - a)) ^ p');
 fprintf('R2 = %.4f | c = %.6f, m = %.6f, n = %.6f, p = %.6f\n', ComputeR2(ExperimentalDTG, SBTheoreticalDTG), SBResultParameters);
@@ -39,3 +52,18 @@ fprintf('R2 = %.4f | c = %.6f, m = %.6f, n = %.6f\n', ComputeR2(ExperimentalDTG,
 disp('Cai-Liu Fit:');
 disp('f(a) = c * a ^ m * (1 - q * a) ^ n');
 fprintf('R2 = %.4f | c = %.6f, m = %.6f, q = %.6f, n = %.6f\n', ComputeR2(ExperimentalDTG, CLTheoreticalDTG), CLResultParameters);
+end
+SBAverageParameters(StageId, :) = SBAverageParameters(StageId, :) ./ length(InitialVelocities);
+TSBAverageParameters(StageId, :) = TSBAverageParameters(StageId, :) ./ length(InitialVelocities);
+CLAverageParameters(StageId, :) = CLAverageParameters(StageId, :) ./ length(InitialVelocities);
+disp('====================================================== Average stage values ======================================================');
+disp('Sestak-Berggren Fit:');
+disp('f(a) = c * a ^ m * (1 - a) ^ n * (-ln(1 - a)) ^ p');
+fprintf('c = %.6f, m = %.6f, n = %.6f, p = %.6f\n', SBAverageParameters(StageId, :));
+disp('Truncated Sestak-Berggren Fit:');
+disp('f(a) = c * a ^ m * (1 - a) ^ n');
+fprintf('c = %.6f, m = %.6f, n = %.6f\n', TSBAverageParameters(StageId, :));
+disp('Cai-Liu Fit:');
+disp('f(a) = c * a ^ m * (1 - q * a) ^ n');
+fprintf('c = %.6f, m = %.6f, q = %.6f, n = %.6f\n', CLAverageParameters(StageId, :));
+end

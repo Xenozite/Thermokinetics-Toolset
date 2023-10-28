@@ -43,8 +43,8 @@ end
 %==========================================================================
 for MassIndex = 1:length(InitialMass)
 Mass(MassIndex, :) = InitialMass(MassIndex) .* TG(MassIndex, :) ./ 100;
-DTGMass(MassIndex, :) = [diff(Mass(MassIndex, :)) ./ transpose(diff(TemperatureKelvins(:))), 0];
-DTGPercent(MassIndex, :) = [diff(TG(MassIndex, :)) ./ transpose(diff(TemperatureKelvins(:))), 0];
+DTGMass(MassIndex, :) = ComputeDerivative(Mass(MassIndex, :), TemperatureKelvins(:));
+DTGPercent(MassIndex, :) = ComputeDerivative(TG(MassIndex, :), TemperatureKelvins(:));
 end
 %==========================================================================
 for VelocityId = 1:length(InitialVelocities)
@@ -60,7 +60,7 @@ TemperatureRanges{VelocityId, StepId} = linspace(TemperatureKelvins(StartId), Te
 [UniqueConversions, UniqueIndices] = unique(Conversions{VelocityId, StepId});
 UniqueTemperatures = TemperatureRanges{VelocityId, StepId}(UniqueIndices);
 clear UniqueIndices;
-TargetConversionsTemperatures{VelocityId, StepId} = interp1(UniqueConversions, UniqueTemperatures, TargetConversions, 'spline');
+TargetConversionsTemperatures{VelocityId, StepId} = interp1(UniqueConversions, UniqueTemperatures, TargetConversions, 'makima');
 ReversedTargetConversionsTemperatures{VelocityId, StepId} = 1 ./ TargetConversionsTemperatures{VelocityId, StepId};
 clear UniqueConversions;
 clear UniqueTemperatures;

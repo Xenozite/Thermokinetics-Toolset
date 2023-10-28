@@ -1,7 +1,7 @@
 <h1 style="text-align: center;">Thermokinetics Toolset</h1>
 <div style="text-align: center;">
 
-![Static Badge](https://img.shields.io/badge/Version-1.2-mediumseagreen)
+![Static Badge](https://img.shields.io/badge/Version-1.3-mediumseagreen)
 ![Static Badge](https://img.shields.io/badge/MATLAB-R2023a-blue)
 ![Static Badge](https://img.shields.io/badge/License-MIT-crimson)
 ![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/xenozite/Thermokinetics-Toolset?color=orchid)

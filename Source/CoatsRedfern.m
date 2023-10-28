@@ -23,7 +23,7 @@ ModelsData{VelocityId, StageId}(ModelId, 6) = real(exp(P(2)) .* InitialVelocitie
 ModelsData{VelocityId, StageId}(ModelId, 7) = sprintf('%.4f', real(1 - (S.normr ./ norm(CRLeftSide{VelocityId, StageId}(ModelId, :) - mean(CRLeftSide{VelocityId, StageId}(ModelId, :)))) .^ 2));
 end
 SortedModelsData = sortrows(ModelsData{VelocityId, StageId}, 7, 'descend');
-fprintf('===================================================== Stage: %d, Velocity: %d =====================================================\n', StageId, InitialVelocities(VelocityId));
+fprintf('===================================================== Stage: %d, Velocity: %d =====================================================\n', StageId, InitialVelocities(VelocityId) .* 60);
 disp(' Model Name    Model Id       Slope                Intercept                  Ea                  A                  R2');
 disp(SortedModelsData);
 for ModelDataId = 1:3
@@ -34,9 +34,14 @@ hold on;
 grid on;
 plot(ReversedTargetConversionsTemperatures{VelocityId, StageId} (1, :), CRLeftSide{VelocityId, StageId}(str2num(SortedModelsData(ModelDataId, 2)), :), 'Color', '#0C5DA5', 'LineStyle', 'none', 'Marker', '.', 'MarkerSize', 10);
 hold off;
+Axes = gca;
+Axes.XMinorGrid = 'on';
+Axes.YMinorGrid = 'on';
+Axes.XMinorTick = 'on';
+Axes.YMinorTick = 'on';
 xlabel('$\frac{1}{T}, K^{-1}$', 'Interpreter', 'LaTex', 'FontSize', 14);
 ylabel('$\ln\frac{g(\alpha)}{T^2}$', 'Interpreter', 'LaTex', 'FontSize', 18);
-title(PlotTile, sprintf('Model: %s, β = %.2f\nE_{α} = %.2f kJmol^{-1}, A = %.2e\nR2 = %.4f', SortedModelsData(ModelDataId, 1), InitialVelocities(VelocityId), SortedModelsData(ModelDataId, 5), SortedModelsData(ModelDataId, 6), SortedModelsData(ModelDataId, 7)), "FontSize", 10, "FontWeight", "normal");
+title(PlotTile, sprintf('Model: %s, β = %.2f\nE_{α} = %.2f kJ/mol, A = %.2e\nR2 = %.4f', SortedModelsData(ModelDataId, 1), InitialVelocities(VelocityId) .* 60, SortedModelsData(ModelDataId, 5), SortedModelsData(ModelDataId, 6), SortedModelsData(ModelDataId, 7)), "FontSize", 10, "FontWeight", "normal");
 end
 end
 end
