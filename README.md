@@ -45,16 +45,16 @@ Despite the abundance of methods, it is recommended to use FR, AIC, ALIM for ana
 # Usage
 <div style="text-align: justify;">
 
-1. The analysis begins with the preparation of data in CSV format without header line and placing that file in main directory with name 'Data.csv':
+1. The analysis begins with the preparation of data in CSV format and placing that file in main directory with some name, for example 'Data.csv':
 
-| Temperature (°C) | Mass change (%) for every heat veloctiy | Heat change (mW/mg) for every heat veloctiy | Deconvoluted peak #1 for every velocity | ... |  Deconvoluted peak #N for every velocity |
-|:-----------:|:---------------------------------------:|:-------------------------------------------:|:----:|:---:|:----:|
-|     30.5    |                   99.3                  |                     -0.16                   | 0.05 | ... | 0.02 |
-|     31.2    |                   98.6                  |                     -0.21                   | 0.07 | ... | 0.03 |
-|     32.7    |                   97.1                  |                     -0.25                   | 0.08 | ... | 0.07 |
-|     ...     |                   ...                   |                      ...                    | ... | ... | ... |
+| Temperature (°C) | Mass change (%) for every heat veloctiy | Heat change (mW/mg) for every heat veloctiy | Deconvoluted peak #1 for <span style="color:orange">first</span> velocity | ... |  Deconvoluted peak #N for <span style="color:orange">first</span> velocity | Deconvoluted peak #1 for <span style="color:orange">second</span> velocity |
+|:-----------:|:---------------------------------------:| :-------------------------------------------:|:----:|:---:|:----:| :----: |
+|     30.5    |                   99.3                  |                     -0.16                   | 0.05 | ... | 0.02 | ... |
+|     31.2    |                   98.6                  |                     -0.21                   | 0.07 | ... | 0.03 | ... |
+|     32.7    |                   97.1                  |                     -0.25                   | 0.08 | ... | 0.07 | ... |
+|     ...     |                   ...                   |                      ...                    | ... | ... | ... | ... |
 
-2. Open GlobalSettings.m and define initial masses of samples, heat velocities, steps and its temperature ranges, deconvoluted peaks count, target convertion range. This script will make precomputions for further usage in other ones. Deconvolution of peaks must be done using dm/dT vs T relation (% of lost mass/K).
+1. Open GlobalSettings.m and define initial masses of samples, heat velocities, steps and its temperature ranges, deconvoluted peaks count, target convertion range. This script will make precomputions for further usage in other ones. Deconvolution of peaks must be done using dm/dT vs T relation (% of lost mass/K). Here is an example:
 
 ```js
 // We have 3 samples which were analysed on 3 velocities.
@@ -95,6 +95,11 @@ There are several optimal experimentally revealed target conversions ranges scop
 Despite this, they may be unique in your own case.
 
 3. For viewing first results open Plotter.m and run. This script will plot TGA, DSC, DTG, Convertions dependencies.
+<div style="text-align: center;">
+
+![TG](https://private-user-images.githubusercontent.com/59807560/336993481-b592891b-c2ea-4ed2-a4c7-308dd2d3b20c.svg?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MTc2MTgxNDQsIm5iZiI6MTcxNzYxNzg0NCwicGF0aCI6Ii81OTgwNzU2MC8zMzY5OTM0ODEtYjU5Mjg5MWItYzJlYS00ZWQyLWE0YzctMzA4ZGQyZDNiMjBjLnN2Zz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDA2MDUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwNjA1VDIwMDQwNFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWJlY2ZkMDJlNDE4ZGI4ZGFjMDlhMDU4ZGViNWVjZDU5ZWE3Nzg2MDdmZDc4ZGFlMGY1ODQ3MDE0ZDhhYzYyZTkmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.y8qwMSA4ouXdtg8wgegeNwtmSSyI9zbyHwIEMqRyZCM)
+</div>
+
 4. Choose corresponding target convertion range and run any method for getting Ea dependencies for every reaction stage.
 
 <div style="text-align: center;">

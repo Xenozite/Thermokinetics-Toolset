@@ -2,7 +2,7 @@ GlobalSettings;
 for StageId = 1:StagesCount
 for VelocityId = 1:length(InitialVelocities)
 ConversionTemperatureDerivatives{VelocityId, StageId} = ComputeDerivative(TargetConversions(1, :), TargetConversionsTemperatures{VelocityId, StageId}(1, :));
-ConversionTemperatureDerivatives{VelocityId, StageId} = SGFilter(ConversionTemperatureDerivatives{VelocityId, StageId}, 10, 10, 3);
+ConversionTemperatureDerivatives{VelocityId, StageId} = SGFilter(ConversionTemperatureDerivatives{VelocityId, StageId}, 8, 8, 3);
 for ConversionId = 1:length(TargetConversions)
 FriedmanLeftSide{StageId}(ConversionId, VelocityId) = log(InitialVelocities(VelocityId) .* ConversionTemperatureDerivatives{VelocityId, StageId}(ConversionId));
 end
@@ -14,11 +14,13 @@ hold on;
 fprintf('===================================================== Stage: %d =====================================================\n', StageId);
 disp(' Conversion          Ea              R2');
 for TargetConversionId = 1:length(TargetConversions)
-plot(SameConversionsReversedTemperatures{StageId}(TargetConversionId, :), FriedmanLeftSide{StageId}(TargetConversionId, :));
+%plot(SameConversionsReversedTemperatures{StageId}(TargetConversionId, :), FriedmanLeftSide{StageId}(TargetConversionId, :), 'Color', '#0F00E6', 'LineStyle', 'none', 'Marker', '.', 'MarkerSize', 10);
 [Slope, S] = polyfit(SameConversionsReversedTemperatures{StageId}(TargetConversionId, :), FriedmanLeftSide{StageId}(TargetConversionId, :), 1);
 SlopeData = polyval(Slope(1, :), SameConversionsReversedTemperatures{StageId}(TargetConversionId, :));
+plot(SameConversionsReversedTemperatures{StageId}(TargetConversionId, :), SlopeData, 'LineStyle', '-');
 R2{StageId}(1, TargetConversionId) = 1 - (S.normr ./ norm(SlopeData - mean(SlopeData))) .^ 2;
 Ea{StageId}(1, TargetConversionId) = Slope(1) .* R  ./ -1.0;
+Error{StageId}(1, TargetConversionId) = Ea{StageId}(1, TargetConversionId) .* sqrt((1 - R2{StageId}(1, TargetConversionId)) ./ R2{StageId}(1, TargetConversionId));
 fprintf('   %.4f        %.4f        %.4f\n', TargetConversions(TargetConversionId), Ea{StageId}(1, TargetConversionId), R2{StageId}(1, TargetConversionId));
 end
 hold off;
@@ -37,9 +39,12 @@ TempEvaluation = transpose(polyval(PolyEaCoefficients{StageId}, TargetConversion
 FigureNumber = FigureNumber + 1;
 figure(FigureNumber);
 grid on;
+plot(TargetConversions(:), Ea{StageId}, 'Color', '#0F00E6', 'LineStyle', '-', 'Marker', 'none', 'MarkerSize', 10);
 hold on;
-plot(TargetConversions(:), Ea{StageId}, 'Color', '#0C5DA5', 'LineStyle', 'none', 'Marker', '.', 'MarkerSize', 10);
-plot(TargetConversions(:), TempEvaluation, 'Color', '#F94144');
+ConfidencePlot = fill([TargetConversions TargetConversions(end:-1:1)], [Ea{StageId} + Error{StageId} Ea{StageId}(end:-1:1) - Error{StageId}(end:-1:1)], 'b');
+ConfidencePlot.FaceColor = '#0F00E6';
+ConfidencePlot.EdgeColor = 'none';
+ConfidencePlot.FaceAlpha = 0.125;
 hold off;
 Axes = gca;
 Axes.YAxis.Exponent = 0;
